@@ -1,6 +1,7 @@
 ﻿using ProjectOrganizer.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace ProjectOrganizer.DAL
 {
@@ -20,7 +21,37 @@ namespace ProjectOrganizer.DAL
         /// <returns></returns>
         public IList<Project> GetAllProjects()
         {
-            throw new NotImplementedException();
+            List<Project> projectList = new List<Project>();
+
+            string cmndTxt = "SELECT project_id, name, from_date, to_date FROM project";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndTxt, sqlConn);
+                    SqlDataReader reader = sqlCmnd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Project project = new Project();
+
+                        project.ProjectId = Convert.ToInt32(reader["project_id"]);
+                        project.Name = Convert.ToString(reader["name"]);
+                        project.StartDate = Convert.ToDateTime(reader["from_date"]);
+                        project.EndDate = Convert.ToDateTime(reader["to_date"]);
+
+                        projectList.Add(project);
+                    }
+                }
+            }
+            catch
+            {
+                return projectList = new List<Project>();
+            }
+            return projectList;
         }
 
         /// <summary>
@@ -31,7 +62,26 @@ namespace ProjectOrganizer.DAL
         /// <returns>If it was successful.</returns>
         public bool AssignEmployeeToProject(int projectId, int employeeId)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            string cmndTxt = "INSERT INTO project_employee (employee_id," +
+                             " project_id) Values (@employee_id, @project_id";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndTxt, sqlConn);
+                    //sqlCmnd.Parameters.AddWithValue
+                }
+            }
+            catch
+            {
+                return result;
+            }
+            return result;
         }
 
         /// <summary>
@@ -42,8 +92,28 @@ namespace ProjectOrganizer.DAL
         /// <returns>If it was successful.</returns>
         public bool RemoveEmployeeFromProject(int projectId, int employeeId)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            string cmndTxt = "DELETE FROM project_employee WHERE project_id =" +
+                             "@project_id AND employee_id = @employee_id";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndTxt, sqlConn);
+                    //sqlCmnd.Parameters.Remove
+                }
+            }
+            catch
+            {
+                return result;
+            }
+            return result;
         }
+
 
         /// <summary>
         /// Creates a new project.
@@ -52,8 +122,31 @@ namespace ProjectOrganizer.DAL
         /// <returns>The new id of the project.</returns>
         public int CreateProject(Project newProject)
         {
-            throw new NotImplementedException();
-        }
+            int newId = 0;
 
+            string cmndText = "INSERT INTO project (name, from_date, to_date) " +
+                              "VALUES (@name, @from_date, @to_date)";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
+                    sqlCmnd.Parameters.AddWithValue("@name", newProject.Name);
+                    sqlCmnd.Parameters.AddWithValue("@from_date", newProject.StartDate);
+                    sqlCmnd.Parameters.AddWithValue("@to_date", newProject.EndDate);
+
+                    newId = newProject.ProjectId;
+                }
+            }
+            catch
+            {
+                return newId;
+            }
+            return newId;
+        }
     }
 }
+

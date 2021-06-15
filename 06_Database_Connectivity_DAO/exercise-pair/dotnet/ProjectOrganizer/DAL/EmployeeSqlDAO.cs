@@ -1,6 +1,7 @@
 ﻿using ProjectOrganizer.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace ProjectOrganizer.DAL
 {
@@ -20,7 +21,39 @@ namespace ProjectOrganizer.DAL
         /// <returns>A list of all employees.</returns>
         public IList<Employee> GetAllEmployees()
         {
-            throw new NotImplementedException();
+            List<Employee> employeeList = new List<Employee>();
+
+            string cmndText = "SELECT employee_id, last_name, first_name, " +
+                              "job_title, birth_date FROM employee";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
+                    SqlDataReader reader = sqlCmnd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Employee employee = new Employee();
+
+                        employee.EmployeeId = Convert.ToInt32(reader["employee_id"]);
+                        employee.LastName = Convert.ToString(reader["last_name"]);
+                        employee.FirstName = Convert.ToString(reader["first_name"]);
+                        employee.JobTitle = Convert.ToString(reader["job_title"]);
+                        employee.BirthDate = Convert.ToDateTime(reader["birth_date"]);
+
+                        employeeList.Add(employee);
+                    }
+                }
+            }
+            catch
+            {
+                return employeeList = new List<Employee>();
+            }
+            return employeeList;
         }
 
         /// <summary>
@@ -33,7 +66,43 @@ namespace ProjectOrganizer.DAL
         /// <returns>A list of employees that matches the search.</returns>
         public IList<Employee> Search(string firstname, string lastname)
         {
-            throw new NotImplementedException();
+            List<Employee> searchedEmployees = new List<Employee>();
+
+            string cmndText = "SELECT employee_id, first_name, last_name " +
+                              "job_title, birth_date FROM employee";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
+                    SqlDataReader reader = sqlCmnd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Employee employee = new Employee();
+
+                        employee.EmployeeId = Convert.ToInt32(reader["employee_id"]);
+                        employee.LastName = Convert.ToString(reader["last_name"]);
+                        employee.FirstName = Convert.ToString(reader["first_name"]);
+                        employee.JobTitle = Convert.ToString(reader["job_title"]);
+                        employee.BirthDate = Convert.ToDateTime(reader["birth_date"]);
+
+                        if (employee.LastName == lastname &&
+                            employee.FirstName == firstname)
+                        {
+                            searchedEmployees.Add(employee);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                searchedEmployees = new List<Employee>();
+            }
+            return searchedEmployees;
         }
 
         /// <summary>
@@ -42,7 +111,40 @@ namespace ProjectOrganizer.DAL
         /// <returns></returns>
         public IList<Employee> GetEmployeesWithoutProjects()
         {
-            throw new NotImplementedException();
+            List<Employee> employeeListNoProjects = new List<Employee>();
+
+            string cmndText = "SELECT employee_id, last_name, first_name, job_title, birth_date" +
+                              " FROM employee WHERE employee_id NOT IN(SELECT employee_id" +
+                              " FROM project_employee); ";
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(connectionString))
+                {
+                    sqlConn.Open();
+
+                    SqlCommand sqlCmd = new SqlCommand(cmndText, sqlConn);
+                    SqlDataReader reader = sqlCmd.ExecuteReader(); //reader contains the query results
+
+                    while (reader.Read())
+                    {
+                        Employee employee = new Employee();
+
+                        employee.EmployeeId = Convert.ToInt32(reader["employee_id"]);
+                        employee.LastName = Convert.ToString(reader["last_name"]);
+                        employee.FirstName = Convert.ToString(reader["first_name"]);
+                        employee.JobTitle = Convert.ToString(reader["job_title"]);
+                        employee.BirthDate = Convert.ToDateTime(reader["birth_date"]);
+
+                        employeeListNoProjects.Add(employee);
+                    }
+                }
+            }
+            catch 
+            {
+                return employeeListNoProjects = new List<Employee>();
+            }
+            return employeeListNoProjects;
         }
 
     }

@@ -15,9 +15,10 @@ namespace ProjectOrganizer
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             IConfigurationRoot configuration = builder.Build();
-
-            string connectionString = configuration.GetConnectionString("Project");
             #endregion
+
+            string connectionString = @"Data Source =.\sqlexpress; Initial Catalog = 
+                                        EmployeeDB; Integrated Security = True";
 
             IProjectDAO projectDAO = new ProjectSqlDAO(connectionString);
             IEmployeeDAO employeeDAO = new EmployeeSqlDAO(connectionString);
