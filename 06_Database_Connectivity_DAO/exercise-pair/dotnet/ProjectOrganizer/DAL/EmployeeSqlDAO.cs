@@ -68,8 +68,9 @@ namespace ProjectOrganizer.DAL
         {
             List<Employee> searchedEmployees = new List<Employee>();
 
-            string cmndText = "SELECT employee_id, first_name, last_name " +
-                              "job_title, birth_date FROM employee";
+            string cmndText = "SELECT employee_id, first_name, last_name, " +
+                              "job_title, birth_date FROM employee WHERE last_name = " +
+                              "@last_name AND first_name = @first_name";
 
             try
             {
@@ -78,6 +79,8 @@ namespace ProjectOrganizer.DAL
                     sqlConn.Open();
 
                     SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
+                    sqlCmnd.Parameters.AddWithValue("@last_name", lastname);
+                    sqlCmnd.Parameters.AddWithValue("@first_name", firstname);
                     SqlDataReader reader = sqlCmnd.ExecuteReader();
 
                     while (reader.Read())
@@ -89,16 +92,12 @@ namespace ProjectOrganizer.DAL
                         employee.FirstName = Convert.ToString(reader["first_name"]);
                         employee.JobTitle = Convert.ToString(reader["job_title"]);
                         employee.BirthDate = Convert.ToDateTime(reader["birth_date"]);
-
-                        if (employee.LastName == lastname &&
-                            employee.FirstName == firstname)
-                        {
-                            searchedEmployees.Add(employee);
-                        }
+                        
+                        searchedEmployees.Add(employee);
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 searchedEmployees = new List<Employee>();
             }

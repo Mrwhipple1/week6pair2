@@ -64,8 +64,8 @@ namespace ProjectOrganizer.DAL
         {
             bool result = false;
 
-            string cmndTxt = "INSERT INTO project_employee (employee_id," +
-                             " project_id) Values (@employee_id, @project_id";
+            string cmndTxt = "INSERT INTO project_employee (employee_id, project_id) " +
+                             "VALUES (@employee_id, @project_id)";
 
             try
             {
@@ -74,10 +74,17 @@ namespace ProjectOrganizer.DAL
                     sqlConn.Open();
 
                     SqlCommand sqlCmnd = new SqlCommand(cmndTxt, sqlConn);
-                    //sqlCmnd.Parameters.AddWithValue
+                    sqlCmnd.Parameters.AddWithValue("@employee_id", employeeId);
+                    sqlCmnd.Parameters.AddWithValue("@project_id", projectId);
+                    int rowsAffected = sqlCmnd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        result = true;
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return result;
             }
@@ -104,10 +111,17 @@ namespace ProjectOrganizer.DAL
                     sqlConn.Open();
 
                     SqlCommand sqlCmnd = new SqlCommand(cmndTxt, sqlConn);
-                    //sqlCmnd.Parameters.Remove
+                    sqlCmnd.Parameters.AddWithValue("@project_id", projectId);
+                    sqlCmnd.Parameters.AddWithValue("@employee_id", employeeId);
+                    int rowsAffected = sqlCmnd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        result = true;
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return result;
             }
@@ -124,8 +138,9 @@ namespace ProjectOrganizer.DAL
         {
             int newId = 0;
 
-            string cmndText = "INSERT INTO project (name, from_date, to_date) " +
-                              "VALUES (@name, @from_date, @to_date)";
+            string cmndText = "INSERT INTO project (name, from_date, to_date) VALUES (@name, @from_date, @to_date)";
+            string cmndText2 = "SELECT project_id FROM project WHERE " +
+                               "name = @name";
 
             try
             {
@@ -137,11 +152,19 @@ namespace ProjectOrganizer.DAL
                     sqlCmnd.Parameters.AddWithValue("@name", newProject.Name);
                     sqlCmnd.Parameters.AddWithValue("@from_date", newProject.StartDate);
                     sqlCmnd.Parameters.AddWithValue("@to_date", newProject.EndDate);
+                    int rowsAffected = sqlCmnd.ExecuteNonQuery();
 
-                    newId = newProject.ProjectId;
+                    SqlCommand sqlCmnd2 = new SqlCommand(cmndText2, sqlConn);
+                    sqlCmnd2.Parameters.AddWithValue("@name", newProject.Name);
+                    SqlDataReader reader = sqlCmnd2.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        newId = Convert.ToInt32(reader["project_id"]);
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return newId;
             }

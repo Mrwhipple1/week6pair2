@@ -62,6 +62,8 @@ namespace ProjectOrganizer.DAL
             int newId = 0;
 
             string cmndText = "INSERT INTO department (name) VALUES (@name)";
+            string cmndText2 = "SELECT department_id FROM department WHERE " +
+                               "name = @name";
 
             try
             {
@@ -71,11 +73,19 @@ namespace ProjectOrganizer.DAL
 
                     SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
                     sqlCmnd.Parameters.AddWithValue("@name", newDepartment.Name);
+                    int rowsAffected = sqlCmnd.ExecuteNonQuery();
 
-                    newId = newDepartment.Id;
+                    SqlCommand sqlCmnd2 = new SqlCommand(cmndText2, sqlConn);
+                    sqlCmnd2.Parameters.AddWithValue("@name", newDepartment.Name);
+                    SqlDataReader reader = sqlCmnd2.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        newId = Convert.ToInt32(reader["department_id"]);
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return newId;
             }
@@ -101,9 +111,14 @@ namespace ProjectOrganizer.DAL
                     sqlConn.Open();
 
                     SqlCommand sqlCmnd = new SqlCommand(cmndText, sqlConn);
-                    //sqlCmnd.Parameters.
+                    sqlCmnd.Parameters.AddWithValue("@name", updatedDepartment.Name);
+                    sqlCmnd.Parameters.AddWithValue("@department_id", updatedDepartment.Id);
+                    int rowsAffected = sqlCmnd.ExecuteNonQuery();
 
-                    result = true;
+                    if (rowsAffected > 0)
+                    {
+                        result = true;
+                    }
                 }
             }
             catch
