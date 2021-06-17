@@ -145,6 +145,5 @@ namespace ProjectOrganizer.DAL
             }
             return employeeListNoProjects;
         }
-
     }
 }
