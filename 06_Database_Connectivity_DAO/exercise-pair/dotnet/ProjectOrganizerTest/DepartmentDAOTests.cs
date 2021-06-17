@@ -43,23 +43,7 @@ namespace ProjectOrganizerTest
         [TestMethod]
         public void UpdateDepartmentUPDATE()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-
-                string cmndText = "SELECT name FROM department WHERE department_id = " +
-                                  "(SELECT MAX(department_id) FROM department)";
-
-                SqlCommand sqlCmnd = new SqlCommand(cmndText, conn);
-                string result = Convert.ToString(sqlCmnd.ExecuteScalar());
-
-                deptDAO.UpdateDepartment(department);
-
-                SqlCommand sqlCmnd2 = new SqlCommand(cmndText, conn);
-                string resultAfter = Convert.ToString(sqlCmnd.ExecuteScalar());
-
-                Assert.AreNotEqual(result, resultAfter);
-            }
+            
         }
     }
 }

@@ -33,16 +33,16 @@ namespace ProjectOrganizerTest
         protected int wilEmplId = 0;
         protected Project project;
 
-        private TransactionScope tran;
+        //private TransactionScope tran;
 
 
         [TestInitialize]
         public void Setup()
         {
-            tran = new TransactionScope();
+            //tran = new TransactionScope();
 
             department = new Department()
-            { Name = "Wil's Dept" };
+            { Name = "Matters of Great Import" };
 
             employee = new Employee()
             {
@@ -59,6 +59,13 @@ namespace ProjectOrganizerTest
                 StartDate = Convert.ToDateTime("2021-07-02"),
                 EndDate = Convert.ToDateTime("2021-08-16")
             };
+        }
+
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            //tran.Dispose();
         }
 
         public int AddNewEmployee()
@@ -79,11 +86,21 @@ namespace ProjectOrganizerTest
             return wilEmplId;
         }
 
-
-        [TestCleanup]
-        public void Cleanup()
+        public int AddNewDeptartment()
         {
-            tran.Dispose();
+            int newDeptId = 0;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string cmndTxt = "INSERT INTO department (name) " +
+                                 "VALUES ('Matters of Great Import')";
+
+                SqlCommand sqlCmnd = new SqlCommand(cmndTxt, conn);
+                newDeptId = Convert.ToInt32(sqlCmnd.ExecuteScalar());
+            }
+            return newDeptId;
         }
 
         protected int GetRowCount(string table)
