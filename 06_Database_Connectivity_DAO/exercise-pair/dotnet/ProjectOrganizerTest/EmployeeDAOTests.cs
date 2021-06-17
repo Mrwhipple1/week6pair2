@@ -40,15 +40,15 @@ namespace ProjectOrganizerTest
 
                 emplDAO.Search(employee.FirstName, employee.LastName);
 
-                string cmndText = "SELECT employee_id FROM employee WHERE " +
+                string cmndText2 = "SELECT employee_id FROM employee WHERE " +
                                   "first_name = @first_name AND last_name = @last_name";
 
-                SqlCommand sqlCmnd = new SqlCommand(cmndText, conn);
+                SqlCommand sqlCmnd = new SqlCommand(cmndText2, conn);
                 sqlCmnd.Parameters.AddWithValue("@first_name", employee.FirstName);
                 sqlCmnd.Parameters.AddWithValue("@last_name", employee.LastName);
                 int returnedId = Convert.ToInt32(sqlCmnd.ExecuteScalar());
 
-                Assert.AreEqual(returnedId, newEmplId);
+                Assert.AreEqual(newEmplId, returnedId);
             }
         }
 

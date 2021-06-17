@@ -67,9 +67,10 @@ namespace ProjectOrganizerTest
             {
                 conn.Open();
 
-                string cmndTxt = "INSERT INTO employee (department_id, first_name, last_name, job_title, " +
-                                                        "birth_date, hire_date)" +
-                                  " VALUES ((SELECT MIN(department_id) FROM department), 'Wil', 'Whipple', 'Grand Czar', '1976-02-19', '1990-01-01');" +
+                string cmndTxt = "INSERT INTO employee (department_id, first_name, last_name," +
+                                  " job_title, birth_date, hire_date)" +
+                                  " VALUES ((SELECT MIN(department_id) FROM department), " +
+                                  "'Wil', 'Whipple', 'Grand Czar', '1976-02-19', '1990-01-01');" +
                                   " SELECT scope_identity()";
 
                 SqlCommand sqlCmnd = new SqlCommand(cmndTxt, conn);

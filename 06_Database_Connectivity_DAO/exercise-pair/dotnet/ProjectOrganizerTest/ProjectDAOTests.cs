@@ -50,7 +50,7 @@ namespace ProjectOrganizerTest
 
                 int rowCountAfter = GetRowCount("project_employee");
 
-                Assert.AreEqual(rowCount - 1, rowCountAfter);
+                Assert.AreEqual(rowCount + 1, rowCountAfter);
             }
         }
 

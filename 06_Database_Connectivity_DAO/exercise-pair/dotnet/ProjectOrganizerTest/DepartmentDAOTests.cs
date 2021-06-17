@@ -41,8 +41,7 @@ namespace ProjectOrganizerTest
         }
 
         [TestMethod]
-        [DataRow("Newer Dept")]
-        public void UpdateDepartmentUPDATE(string name)
+        public void UpdateDepartmentUPDATE()
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -56,7 +55,10 @@ namespace ProjectOrganizerTest
 
                 deptDAO.UpdateDepartment(department);
 
-                Assert.AreEqual("Newer Dept", result);
+                SqlCommand sqlCmnd2 = new SqlCommand(cmndText, conn);
+                string resultAfter = Convert.ToString(sqlCmnd.ExecuteScalar());
+
+                Assert.AreNotEqual(result, resultAfter);
             }
         }
     }
