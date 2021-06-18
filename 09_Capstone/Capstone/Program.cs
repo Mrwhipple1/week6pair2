@@ -8,8 +8,6 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-
-
             #region call to appsettings.json for configuration
             // Get the connection string from the appsettings.json file
             IConfigurationBuilder builder = new ConfigurationBuilder()
