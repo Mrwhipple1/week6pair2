@@ -29,49 +29,69 @@ namespace Capstone
 
         public void Run()
         {
-            while (!done)
+            try
             {
-                Console.WriteLine("Welcome to Exelsior Venues' Homepage!");
-                Console.WriteLine("Please make a selection below!");
-                Console.WriteLine("_____________________________________");
-
-                MainMenu();
-                Console.WriteLine();
-                string input = Console.ReadLine();
-
-                switch (input)
+                while (!done)
                 {
-                    case "1":
-                        List<Venue> venues = ShowVenues();
-                        Console.WriteLine();
-                        int venueSelection = Convert.ToInt32(Console.ReadLine());
-                        List<Location> locations = locationDAO.GetLocations(venueSelection, venues);
-                        int venueId = ShowVenueDetails(venueSelection, venues, locations);
-                        List<Space> spaces = spaceDAO.GetSpaces(venueId);
-                        List<Space> spacesForVenue = ShowSpaces(venueId, spaces);
-                        int spaceSelection = Convert.ToInt32(Console.ReadLine());
-                        break;
-                    case "2":
-                        QuitProgram();
-                        break;
+                    Console.WriteLine("Welcome to Exelsior Venues' Homepage!");
+                    Console.WriteLine("Please make a selection below!");
+                    Console.WriteLine("_____________________________________");
+
+                    MainMenu();
+                    Console.WriteLine();
+                    string input = Console.ReadLine().ToUpper();
+
+                    switch (input)
+                    {
+                        case "V":
+                            List<Venue> venues = venueDAO.GetVenues();
+                            ShowVenues(venues);
+                            int venueSelection = Convert.ToInt32(Console.ReadLine());
+                            if (venueSelection == 0)
+                            {
+                                break;
+                            }
+                            List<Location> locations = locationDAO.GetLocations(venueSelection, venues);
+                            int venueId = ShowVenueDetails(venueSelection, venues, locations);
+                            List<Category> categories = venueDAO.GetCategories(venueId);
+                            ShowCategories(categories);
+                            List<Space> spaces = spaceDAO.GetSpaces(venueId);
+                            List<Space> spacesForVenue = ShowSpaces(venueId, spaces);
+                            int spaceSelection = Convert.ToInt32(Console.ReadLine());
+                            if (spaceSelection == 0)
+                            {
+                                break;
+                            }
+
+                            break;
+                        case "Q":
+                            QuitProgram();
+                            break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Something went wrong, try again later.");
+                Console.WriteLine(ex.Message);
+                QuitProgram();
             }
         }
 
         private void MainMenu()
         {
-            Console.WriteLine("Choose \"1\" to diplay venues.");
-            Console.WriteLine("Choose \"2\" to quit the program.");
+            Console.WriteLine("Choose \"V\" to diplay venues.");
+            Console.WriteLine("Choose \"Q\" to quit the program.");
         }
 
-        private List<Venue> ShowVenues()
+        private void ShowVenues(List<Venue> venues)
         {
-            List<Venue> venues = venueDAO.GetVenues();
-
             try
             {
-                Console.WriteLine();
-                Console.WriteLine("Select a venue below for more information:");
+                Console.WriteLine("_____________________________________");
+                Console.WriteLine("Select a venue below for more information or select 0 " +
+                                  "to return to the main menu:");
                 Console.WriteLine();
 
                 int row = 0;
@@ -79,7 +99,6 @@ namespace Capstone
                 foreach (Venue venue in venues)
                 {
                     row++;
-
                     Console.WriteLine(row + ". " + venue.Name);
                 }
                 Console.WriteLine();
@@ -90,7 +109,6 @@ namespace Capstone
                 Console.WriteLine(ex.Message);
                 QuitProgram();
             }
-            return venues;
         }
 
         public int ShowVenueDetails(int venueSelection, List<Venue> venues,
@@ -102,6 +120,7 @@ namespace Capstone
                 {
                     if (i == venueSelection - 1)
                     {
+                        Console.WriteLine("_____________________________________");
                         Console.WriteLine(venues[i].Name);
                         for (int i2 = 0; i2 < locations.Count; i2++)
                         {
@@ -122,12 +141,34 @@ namespace Capstone
             return -1;
         }
 
+        public void ShowCategories(List<Category> categories)
+        {
+            try
+            {
+                int count = 0;
+
+                foreach (Category category in categories)
+                {
+                    count++;
+                    Console.WriteLine("Category #" + count + ": " + category.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Something went wrong, try again later.");
+                Console.WriteLine(ex.Message);
+                QuitProgram();
+            }
+        }
+
         private List<Space> ShowSpaces(int venueId, List<Space> spaces)
-        {          
+        {
             try
             {
                 Console.WriteLine();
-                Console.WriteLine("Select a space below for more information:");
+                Console.WriteLine("Select one of this fine venue's spaces below to" +
+                                  " check availability, or select 0 to return to the" +
+                                  " main menu.");
                 Console.WriteLine();
 
                 int row = 0;
@@ -135,9 +176,13 @@ namespace Capstone
                 foreach (Space space in spaces)
                 {
                     row++;
-                    Console.WriteLine(row + ". " + space.Name);
+                    Console.WriteLine(row + ".");
+                    Console.WriteLine(space.Name);
+                    Console.WriteLine("Daily rate = " + "$" + space.Rate);
+                    Console.WriteLine("Is wheelchair accessible: " + space.IsAccessible);
+                    Console.WriteLine("Maximum Occupancy: " + space.Occupancy);
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -148,7 +193,7 @@ namespace Capstone
             return spaces;
         }
 
-        private void QuitProgram()
+        public void QuitProgram()
         {
             Console.WriteLine();
             Console.WriteLine("_____________________________________");

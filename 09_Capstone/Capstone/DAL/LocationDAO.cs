@@ -21,7 +21,6 @@ namespace Capstone.DAL
             {
                 List<Location> locations = new List<Location>();
 
-
                 conn.Open();
 
                 string cmndText = "SELECT city.id, city.name, state_abbreviation FROM city JOIN venue " +
@@ -54,3 +53,4 @@ namespace Capstone.DAL
         }
     }
 }
+
