@@ -15,11 +15,11 @@ namespace Capstone.Models
         public decimal Rate { get; }
         public int Occupancy { get; }
 
-        public Space (int id, int venueId, string name, bool is_accessible, 
+        public Space(int id, int venue_id, string name, bool is_accessible,
                       string open_from, string open_to, decimal daily_rate, int max_occupancy)
         {
             Id = id;
-            VenueId = venueId;
+            VenueId = venue_id;
             Name = name;
             IsAccessible = is_accessible;
             MonthOpen = open_from;
