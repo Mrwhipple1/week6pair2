@@ -59,14 +59,14 @@ namespace Capstone
                             List<Space> spaces = spaceDAO.GetSpaces(venueId);
                             List<Space> spacesForVenue = ShowSpaces(venueId, spaces);
                             int spaceSelection = Convert.ToInt32(Console.ReadLine());
-                            List<Reservation> reservations = reservationDAO.GetReservations(spacesForVenue, spaceSelection);
-                            //ShowReservations(spacesForVenue, spaceSelection, reservations);
                             if (spaceSelection == 0)
                             {
                                 Console.WriteLine();
                                 Console.WriteLine("_____________________________________");
                                 break;
                             }
+                            List<Reservation> reservations = reservationDAO.GetReservations(spacesForVenue, spaceSelection);
+                            Space space = ShowReservations(spacesForVenue, spaceSelection, reservations);
                             int bookOrNot = Convert.ToInt32(Console.ReadLine());
                             if (bookOrNot == 0)
                             {
@@ -74,27 +74,24 @@ namespace Capstone
                                 Console.WriteLine("_____________________________________");
                                 break;
                             }
-                            int startMonth = StartMonthOpenCheck();
-                            if (startMonth == 0)
+                            if (bookOrNot == 1)
                             {
                                 Console.WriteLine();
                                 Console.WriteLine("_____________________________________");
-                                break;
-                            }
-                            int endMonth = EndMonthOpenCheck();
-                            if (endMonth == 0)
-                            {
+                                DateTime startDate = GetStartDate(space);
                                 Console.WriteLine();
                                 Console.WriteLine("_____________________________________");
-                                break;
+                                int lengthOfBooking = GetLengthOfBooking();
+                                bool open = IsOpen(space, startDate, lengthOfBooking);
+                                if (open == false)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    //IsAvailable
+                                }
                             }
-                            Space space = GetSpace(spaces, spaceSelection);
-                            bool open = IsOpen(space, startMonth, endMonth);
-                            if (open == false)
-                            {
-                                break;
-                            }
-                            DateTime startDate = GetStartDate(startMonth);
                             break;
                         case "Q":
                             QuitProgram();
@@ -224,7 +221,7 @@ namespace Capstone
             return spaces;
         }
 
-        public void ShowReservations(List<Space> spacesForVenue, int spaceSelection, List<Reservation> reservations)
+        public Space ShowReservations(List<Space> spacesForVenue, int spaceSelection, List<Reservation> reservations)
         {
             for (int i = 0; i < spacesForVenue.Count; i++)
             {
@@ -234,76 +231,63 @@ namespace Capstone
 
                     Console.WriteLine();
                     Console.WriteLine("_____________________________________");
-                    Console.WriteLine("Here are the active reservations for " +
-                                      spaceName + " this year.");
+                    Console.WriteLine(spaceName + " is open from 2021/" +
+                                      spacesForVenue[i].MonthOpen + "/01,"
+                                      + " to the end of 2021/" + spacesForVenue[i].MonthClose
+                                      + ".");
+                    Console.WriteLine("Here are the active reservations for this space:");
 
                     foreach (Reservation reservation in reservations)
                     {
-                        Console.WriteLine(reservation.StartDate + "-" +reservation.EndDate);
+                        Console.WriteLine(reservation.StartDate + " - " + reservation.EndDate);
                     }
                 }
             }
+            Console.WriteLine();
+            Console.WriteLine("To book this venue for open dates not currently reserved, please" +
+                              " enter \"1\" below. Otherwise, enter \"0\" to exit to main menu.");
+            Console.WriteLine();
+
+            return spacesForVenue[spaceSelection - 1];
         }
 
-        public int StartMonthOpenCheck()
+        public DateTime GetStartDate(Space space)
         {
-            try
-            {
-                int startMonth;
+            Console.WriteLine("Great! We're happy to host! Please let us know the" +
+                              " month you'd like your reservation to begin (Ex: 2, 11, etc.):");
+            Console.WriteLine();
 
-                Console.WriteLine();
-                Console.WriteLine("_____________________________________");
-                Console.WriteLine("Please enter the month during which your event begins " +
-                                  "(Ex: 1, 6, 10, 12, etc.) or select \"0\" to return to the" +
-                                  " main menu:");
-                Console.WriteLine();
-                startMonth = Convert.ToInt32(Console.ReadLine());
+            int startMonth = Convert.ToInt32(Console.ReadLine());
 
-                return startMonth;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Something went wrong, try again later.");
-                Console.WriteLine(ex.Message);
-                QuitProgram();
-            }
-            return -1; ;
+            Console.WriteLine();
+            Console.WriteLine("_____________________________________");
+            Console.WriteLine("Which day of that month (5, 21, etc)?");
+            Console.WriteLine();
+
+            int startDay = Convert.ToInt32(Console.ReadLine());
+
+            DateTime startDate = new DateTime(2021, startMonth, startDay);
+            return startDate;
         }
 
-        public int EndMonthOpenCheck()
-        {
-            try
-            {
-                int endMonth;
+        public int GetLengthOfBooking()
+        {            
+            Console.WriteLine("And how many days - including the start day - would you like to " +
+                              "book? (enter as numerical)");
+            Console.WriteLine();
 
-                Console.WriteLine("Please enter the month during which your event ends " +
-                                  "(Ex: 1, 6, 10, 12, etc.) or select \"0\" to return to the" +
-                                  " main menu:");
-                Console.WriteLine();
-                endMonth = Convert.ToInt32(Console.ReadLine());
+            int lengthOfBooking = Convert.ToInt32(Console.ReadLine());
 
-                return endMonth;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Something went wrong, try again later.");
-                Console.WriteLine(ex.Message);
-                QuitProgram();
-            }
-            return -1;
+            return lengthOfBooking;
         }
 
-        public Space GetSpace(List<Space> spaces, int spaceSelection)
-        {
-            return spaces[spaceSelection - 1];
-        }
-
-        public bool IsOpen(Space space, int startMonth,
-                                 int endMonth)
+        public bool IsOpen(Space space, DateTime startDate, int lengthOfBooking)
         {
             bool result = false;
 
-            if (startMonth > endMonth)
+            DateTime endDate = startDate.AddDays(lengthOfBooking - 1);
+
+            if (endDate.Month >= Convert.ToInt32(space.MonthClose))
             {
                 Console.WriteLine("Sorry, this timeframe doesn't compute. Please select a" +
                                   " different space or select a different timeframe for your" +
@@ -311,8 +295,8 @@ namespace Capstone
                 Console.WriteLine();
                 Console.WriteLine("_____________________________________");
             }
-            if (startMonth >= Convert.ToInt32(space.MonthOpen) &&
-                endMonth <= Convert.ToInt32(space.MonthClose))
+            if (startDate.Month >= Convert.ToInt32(space.MonthOpen) &&
+                endDate.Month <= Convert.ToInt32(space.MonthClose))
             {
                 result = true;
                 return result;
@@ -326,20 +310,6 @@ namespace Capstone
                 Console.WriteLine("_____________________________________");
             }
             return result;
-        }
-
-        public DateTime GetStartDate(int startMonth)
-        {
-            Console.WriteLine("Great! We're open during that time and happy to host! Please " +
-                              "let us know the day of the month you'd like your reservation" +
-                              " to begin.");
-            int startDayInt = Convert.ToInt32(Console.ReadLine());
-
-            string startDateString = "2021-" + startMonth + "-" + startDayInt;
-
-            DateTime startDate = Convert.ToDateTime(startDateString);
-
-            return startDate;
         }
 
         public void QuitProgram()

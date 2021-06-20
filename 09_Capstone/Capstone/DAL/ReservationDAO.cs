@@ -8,8 +8,6 @@ namespace Capstone.DAL
 {
     public class ReservationDAO
     {
-        //Book a space for specific dates
-
         private string connectionString;
 
 
@@ -60,7 +58,7 @@ namespace Capstone.DAL
                                                                       reservationName);
                             reservations.Add(reservation);
                         }
-                    }//String input was not in a valid format exception. DateTime conversion?
+                    }
                 }
             }
             return reservations;
