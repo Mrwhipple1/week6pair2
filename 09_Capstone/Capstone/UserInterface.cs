@@ -89,7 +89,7 @@ namespace Capstone
                                 }
                                 else
                                 {
-                                    //IsAvailable
+                                    bool isAvailable = IsAvailable(reservations, startDate, lengthOfBooking);
                                 }
                             }
                             break;
@@ -110,7 +110,7 @@ namespace Capstone
 
         private void MainMenu()
         {
-            Console.WriteLine("Choose \"V\" to diplay venues or \"Q\" to quit the program.");
+            Console.WriteLine("Choose \"V\" to display venues or \"Q\" to quit the program.");
         }
 
         private void ShowVenues(List<Venue> venues)
@@ -237,10 +237,22 @@ namespace Capstone
                                       + ".");
                     Console.WriteLine("Here are the active reservations for this space:");
 
-                    foreach (Reservation reservation in reservations)
+                    if (reservations.Count > 0)
                     {
-                        Console.WriteLine(reservation.StartDate + " - " + reservation.EndDate);
+                        for (int i2 = 0; i2 < reservations.Count; i2++)
+                        {
+                            if (reservations[i2].SpaceId == spacesForVenue[i].Id)
+                            {
+                                Console.WriteLine(reservations[i2].StartDate + " - " +
+                                                      reservations[i2].EndDate);
+                            }
+                        }
                     }
+                    else
+                    {
+                        Console.WriteLine("(none)");
+                    }
+
                 }
             }
             Console.WriteLine();
@@ -271,7 +283,7 @@ namespace Capstone
         }
 
         public int GetLengthOfBooking()
-        {            
+        {
             Console.WriteLine("And how many days - including the start day - would you like to " +
                               "book? (enter as numerical)");
             Console.WriteLine();
@@ -311,6 +323,47 @@ namespace Capstone
             }
             return result;
         }
+
+        //DEFEAT
+        //public bool IsAvailable(List<Reservation> reservations, DateTime startDate,
+        //                        int lengthOfBooking)
+        //{
+        //    bool available = false;
+
+        //    List<DateTime> oldReservationDays = new List<DateTime>();
+
+        //    foreach (Reservation reservation in reservations)
+        //    {
+        //        for (DateTime i = reservation.StartDate; i == reservation.EndDate; i.AddDays(1))
+        //        {
+        //            oldReservationDays.Add(i);
+        //        }
+        //    }
+
+        //    List<DateTime> newReservationDays = new List<DateTime>();
+
+        //    for (int i = 1; i < lengthOfBooking; i++)
+        //    {
+        //        newReservationDays.Add(startDate.AddDays(1));
+        //    }
+        //    newReservationDays[0] = startDate;
+
+        //    for (int i = 0; i < oldReservationDays.Count; i++)
+        //    {
+        //        if (newReservationDays.Contains(oldReservationDays[i]))
+        //        {
+        //            Console.WriteLine("Sorry, there appears to be an active reservation " +
+        //                              "during that timeframe. Please select new dates, and" +
+        //                              " try again. Thank you!");
+        //        }
+        //        else
+        //        {
+        //            available = true;
+        //            return available;
+        //        }
+        //    }
+        //    return available;
+        //}
 
         public void QuitProgram()
         {
