@@ -65,7 +65,7 @@ namespace Capstone
                                 Console.WriteLine("_____________________________________");
                                 break;
                             }
-                            List<Reservation> reservations = reservationDAO.GetReservations(spacesForVenue, spaceSelection);
+                            List<Reservation> reservations = reservationDAO.GetReservations(spacesForVenue);
                             Space space = ShowReservations(spacesForVenue, spaceSelection, reservations);
                             int bookOrNot = Convert.ToInt32(Console.ReadLine());
                             if (bookOrNot == 0)
@@ -89,7 +89,7 @@ namespace Capstone
                                 }
                                 else
                                 {
-                                    bool isAvailable = IsAvailable(reservations, startDate, lengthOfBooking);
+                                    //bool isAvailable = isAvailable(reservations, startDate, lengthOfBooking);
                                 }
                             }
                             break;

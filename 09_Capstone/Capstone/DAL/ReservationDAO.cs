@@ -16,7 +16,7 @@ namespace Capstone.DAL
             this.connectionString = connectionString;
         }
 
-        public List<Reservation> GetReservations(List<Space> spacesForVenue, int spaceSelection)
+        public List<Reservation> GetReservations(List<Space> spacesForVenue)
         {
             List<Reservation> reservations = new List<Reservation>();
 
